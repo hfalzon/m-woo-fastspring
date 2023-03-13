@@ -88,7 +88,11 @@ function mwfi_create_update_product( $id, $product )
                 //Update product path
                 $wpdb->update(
                     $table_name,
-                    array( 'fs_product_path' => $product_id ),
+                    array( 
+                        'fs_product_path' => $product_id,
+                        'fs_taxcode' => 'DC020502',
+                        'fs_format' => 'digital'
+                    ),
                     array( 'wc_product_id' => $id ),
                     array( '%s' ),
                     array( '%d' )
@@ -102,7 +106,9 @@ function mwfi_create_update_product( $id, $product )
                 $table_name,
                 array(
                     'wc_product_id' => $id,
-                    'fs_product_path' => $product_id
+                    'fs_product_path' => $product_id,
+                    'fs_taxcode' => 'DC020502',
+                    'fs_format' => 'digital'
                 ),
                 array(
                     '%d',
