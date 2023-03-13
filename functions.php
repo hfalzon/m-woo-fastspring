@@ -18,7 +18,7 @@ function mwfi_decrypt( $encrypted, $key = 'QWsdnoai8qwndoskSFH0Aks-aAKSDHSNAasSd
     return $decrypted;
 }
 
-class mwfi_get_product_data
+class mwfi_product_data
 {
     public $format;
     public $type;
@@ -34,13 +34,22 @@ class mwfi_get_product_data
         6 => 'physical_lessons',         //6
     );
 
+    private $tax_codes = array(
+
+    );
+
     private $formats = array(
         'digital',
         'physical',
         'digital-physical',
     );
 
-    public function __construct( $id = null, $type = null )
+    public function get_types()
+    {
+        return $this -> types;
+    }
+
+    public function __construct( $id, $type = null )
     {
         if ( $id == null && $type == null ) {
             return;
@@ -82,7 +91,7 @@ class mwfi_get_product_data
         $id = $this -> id;
 
         //Get the type
-        $this -> type = $this -> formats[ $id ];
+        $this -> type = $this -> types[ $id ]; //Get the type of product
     }
 
     private function get_id()
