@@ -27,17 +27,16 @@ function mwfi_product_metabox_callback($post)
         <table class = "form-table">
             <tr valign="top">
                 <th scope="row">Fastspring Tax Code</th>
-                <td><input type="text" name="mwfi_product_taxcode" value="<?php $product['fs_taxcode'] ?>" size = "25"/></td>
+                <td><input type="text" name="mwfi_product_taxcode" value="<?php echo esc_html( $product['fs_taxcode'] ) ?>" size = "25"/></td>
             </tr>
             <tr valign="top">
                 <th scope="row">Fastspring Product Type</th>
                 <td>
+                    <?php $types = ( new mwfi_product_data( get_the_ID() ) ) -> get_types(); ?>
                     <select name="mwfi_product_type">
-                        <option value="0">Subscription</option>
-                        <option value="1">Digital Download</option>
-                        <option value="2">Digital Access</option>
-                        <option value="3">Shipped Product</option>
-                        <option value="4">Service</option>
+                        <?php foreach ($types as $id => $type): ?>
+                            <option value="<?php echo absint($id) ?>" <?php selected($product['fs_product_type'], $id); ?>><?php echo esc_html($type); ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </td>
         </table>

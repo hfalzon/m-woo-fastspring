@@ -52,6 +52,7 @@ if ( !mwfi_is_woocommerce_active() )
 //Load the custom columns file
 require MWFI_PATH . 'admin/custom-columns/product-columns.php';
 require MWFI_PATH . 'admin/metaboxes/products-metabox.php';
+require MWFI_PATH . 'admin/save-posts/save-products.php';
 
 //Load the Fastspring API file
 require MWFI_PATH . 'api/fastspring-api.php';

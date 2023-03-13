@@ -9,7 +9,12 @@ function mwfi_create_update_product( $id, $product )
     $password = mwfi_decrypt( get_option('mwfi_api_secret_key') );
     //Get product
     //$product = wc_get_product($post_id);
-
+    //Validate taxcode
+    if ( ! preg_match( '/^[a-zA-Z0-9-]+$/', $_POST['mwfi_product_taxcode'] ) ) {
+        return;
+    }
+    $taxcode = $_POST['mwfi_product_taxcode'];
+    $format = new mwfi_product_data( $_POST['mwfi_product_type'] );
     //Create product
     $data = array( 
         'products' => array(
@@ -25,8 +30,8 @@ function mwfi_create_update_product( $id, $product )
                     'en' => $product -> get_description()
                 )
             ),
-            'format' => 'digital',
-            'taxcode' => 'DC020502',
+            'format' => $format -> format,
+            'taxcode' => $taxcode,
             'pricing' => array(
                 'quantityBehabior' => 'single',
                 'price' => array(
@@ -35,7 +40,7 @@ function mwfi_create_update_product( $id, $product )
             )
         )
     );
-    //wp_die(var_dump($data));
+    //wp_die(var_dump($format));
     //Create a base64 encoded string of the $username and $password
     $auth = base64_encode($username . ':' . $password);
     //Format data
@@ -90,11 +95,32 @@ function mwfi_create_update_product( $id, $product )
                     $table_name,
                     array( 
                         'fs_product_path' => $product_id,
-                        'fs_taxcode' => 'DC020502',
-                        'fs_format' => 'digital'
+                        'fs_taxcode' => $taxcode,
+                        'fs_product_type' => $format -> id
                     ),
                     array( 'wc_product_id' => $id ),
-                    array( '%s' ),
+                    array( 
+                        '%s',
+                        '%s',
+                        '%d'
+                    ),
+                    array( '%d' )
+                );
+            }
+            else
+            {
+                //Update taxcode and product type only
+                $wpdb->update(
+                    $table_name,
+                    array( 
+                        'fs_taxcode' => $taxcode,
+                        'fs_product_type' => $format -> id
+                    ),
+                    array( 'wc_product_id' => $id ),
+                    array( 
+                        '%s',
+                        '%d'
+                    ),
                     array( '%d' )
                 );
             }
@@ -107,12 +133,14 @@ function mwfi_create_update_product( $id, $product )
                 array(
                     'wc_product_id' => $id,
                     'fs_product_path' => $product_id,
-                    'fs_taxcode' => 'DC020502',
-                    'fs_format' => 'digital'
+                    'fs_taxcode' => $taxcode,
+                    'fs_product_type' => $format -> id
                 ),
                 array(
                     '%d',
-                    '%s'
+                    '%s',
+                    '%s',
+                    '%d'
                 )
             );
         }
