@@ -57,6 +57,9 @@ require MWFI_PATH . 'admin/save-posts/save-products.php';
 //Load the Fastspring API file
 require MWFI_PATH . 'api/fastspring-api.php';
 
+//Load frontend files
+require MWFI_PATH . 'frontend/checkout.php';
+
 
 
 
