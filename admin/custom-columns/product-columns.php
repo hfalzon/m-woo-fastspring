@@ -23,19 +23,19 @@ function mwfi_add_product_column_content($column, $post_id)
     if ($column == 'mwfi_product_path')
     {
         //Get product path if it exists
-        $fs_product_id = false;
+        $fs_product_path = false;
         foreach ($mwfi_data as $product)
         {
             if ($product['wc_product_id'] == $post_id)
             {
-                $fs_product_id = $product['fs_product_path'];
+                $fs_product_path = $product['fs_product_path'];
                 break;
             }
         }
         //Display product path
-        if ($fs_product_id)
+        if ($fs_product_path)
         {
-            echo esc_html( '<a href="https://fastspring.com/' . $fs_product_path . '" target="_blank">' . $fs_product_path . '</a>' );
+            echo '<a href="https://fastspring.com/' . esc_html($fs_product_path) . '" target="_blank">' . esc_html($fs_product_path) . '</a>';
         }
         else
         {
