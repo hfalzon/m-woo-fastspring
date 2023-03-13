@@ -13,10 +13,14 @@ function mwfi_create_database_table()
     $sql = "CREATE TABLE $table_name (
         id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
         fs_product_path varchar(255) NOT NULL,
+        fs_taxcode varchar(25) NOT NULL,
+        fs_product_type tinyint(4) NOT NULL,
         wc_product_id bigint(20) unsigned NOT NULL,
         PRIMARY KEY (id),
         KEY (fs_product_path),
         KEY (wc_product_id),
+        KEY (fs_taxcode),
+        KEY (fs_product_type),
         FOREIGN KEY (wc_product_id) REFERENCES {$wpdb -> prefix}posts(ID) ON DELETE CASCADE
     ) $charset_collate;";
 
