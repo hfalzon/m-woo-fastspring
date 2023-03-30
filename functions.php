@@ -20,18 +20,18 @@ function mwfi_decrypt( $encrypted, $key = 'QWsdnoai8qwndoskSFH0Aks-aAKSDHSNAasSd
 
 class mwfi_product_data
 {
-    public $format;
     public $type;
     public $id;
+    public $product_type;
+    public $tax_code;
+    public $prices = array(
+
+    );
 
     private $types =  array(
-        0 => 'digital_download',         //0
-        1 => 'digital',                  //1
-        2 => 'digital_subscription',     //2
-        3 => 'digital_lessons',          //3
-        4 => 'physical',                 //4
-        5 => 'physical_subscription',    //5
-        6 => 'physical_lessons',         //6
+        '0' => 'digital',
+        '1' => 'physical',
+        '2' => 'digital-physical',
     );
 
     private $tax_codes = array(
@@ -61,7 +61,6 @@ class mwfi_product_data
             $this -> set_id( $id );
             $this -> get_type();
         }
-        $this -> get_format();
     }
 
     private function set_id( $id )
@@ -106,23 +105,97 @@ class mwfi_product_data
         $this -> id = array_search( $type, $this -> formats );
     }
 
-    private function get_format()
+    private function get_product()
     {
-        //Check if type is set
-        if ( ! isset( $this -> type ) ) {
+        //Check if id is set
+        if ( ! isset( $this -> id ) ) {
             return;
         }
-        $type = $this -> type;
+        $id = $this -> id;
 
-        //Get the format
-        if ( in_array( $type, array( 'digital', 'digital_subscription', 'digital_lessons' ) ) ) {
-            $this -> format = 'digital';
-        } elseif ( in_array( $type, array( 'physical', 'physical_subscription', 'physical_lessons' ) ) ) {
-            $this -> format = 'physical';
-        } else {
-            $this -> format = 'digital-physical';
+        //Get the product
+        $product = $wpdb->get_row( $wpdb -> prepare("SELECT * FROM $table_name WHERE wc_product_id = '%d'", $post->ID), ARRAY_A );
+        if ( $product == null ) {
+            return;
         }
+        $this -> product_type = $product['product_type'];
+        $this -> tax_code = $product['tax_code'];
+        $this -> prices = array(
+            'AUD' => ( isset($product['price_aud'])) ? $product['price_aud'] : null,
+            'GBP' => ( isset($product['price_gbp'])) ? $product['price_gbp'] : null,
+            'EUR' => ( isset($product['price_eur'])) ? $product['price_eur'] : null,
+            'JPY' => ( isset($product['price_jpy'])) ? $product['price_jpy'] : null,
+            'CAD' => ( isset($product['price_cad'])) ? $product['price_cad'] : null,
+        );
     }
+
 }
 
+class mwf_product
+{
+    public $id;
+    public $type;
+    public $tax_code;
+    public $prices = array(
+
+    );
+    public $subscription;
+    public $subscription_interval;
+    public $subscription_interval_count;
+}
+
+function mwfi_get_product_data( $id )
+{
+    $product_data = new mwfi_product_data( $id );
+    return $product_data;
+}
+
+function mwfi_create_headers()
+{
+    $username = get_option('mwfi_api_key');
+    $password = mwfi_decrypt( get_option('mwfi_api_secret_key') );
+    $auth = base64_encode($username . ':' . $password);
+
+    return array( 'authorization: Basic ' . $auth );
+}
+
+function mwfi_checkout()
+{
+    //Check if woo is active
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        return false;
+    }
+    $session = mwfi_create_session();
+    //Check if session is valid
+    if ( isset( $session['error'] ) ) {
+        return $session['error'];
+    }
+    $session_id = $session['session_id'];
+    //Validate session id via regex, only letters, numbers, underscore and dashes
+    if ( ! preg_match( '/^[a-zA-Z0-9_-]+$/', $session_id ) ) {
+        return false;
+    }
+    return $session_id;
+}
+
+/**
+ * Get Price with Decimals
+ * @param  object $product Product Object
+ * @param  bool   $strict  If true, will add .00 to price if it doesn't have decimals
+ * @return string          Price with decimals
+ */
+function mwfi_get_price( $product, $strict = false )
+{
+    $price = $product -> get_price();
+    $price = abs( $price ); //Make sure price is positive number
+    //Check if price has decimals
+    if ( strpos( $price, '.' ) === false ) {
+        if ( !$strict ) {
+            return $price;
+        }
+        $price .= '.00';
+    }
+    $price = number_format( $price, 2, '.', '' );
+    return $price;
+}
 ?>
