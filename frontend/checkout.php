@@ -2,8 +2,13 @@
 
 function mwfi_handle_checkout( $purchase_data )
 {
-    
+    $cart = WC() -> cart -> get_cart();
+    $session = WC() -> session;
+    //Create a new order in FastSpring and get the Session ID
+
+    //Return the session id to pass to the javascript checkout
 }
+add_action('woocommerce_checkout_process', 'mwfi_handle_checkout');
 
 add_action('wp_head', 'mwfi_fs_checkout');
 function mwfi_fs_checkout()
@@ -35,5 +40,6 @@ function remove_checkout_page() {
     }
 }
 
-add_action( 'template_redirect', 'remove_checkout_page' );
+//add_action( 'template_redirect', 'remove_checkout_page' );
+
 ?>

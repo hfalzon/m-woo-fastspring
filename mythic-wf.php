@@ -1,7 +1,7 @@
 <?php 
 ini_set('display_errors', 1); error_reporting(E_ALL);
 /**
- * Plugin Name: Mythic Woocommerce Fastspring Integration
+ * Plugin Name: Mythic WC Fastspring
  * Plugin URI:
  * Description: This plugin integrates WooCommerce with Fastspring to allow for the purchase of digital products and services through Fastspring. While still using WooCommerce for the rest of your store for admin purposes.
  * Version: 1.0.0
@@ -59,6 +59,10 @@ require MWFI_PATH . 'api/fastspring-api.php';
 
 //Load frontend files
 require MWFI_PATH . 'frontend/checkout.php';
+require MWFI_PATH . 'frontend/cart.php';
+
+//Load webhook files
+require MWFI_PATH . 'webhooks/order-complete.php';
 
 
 
