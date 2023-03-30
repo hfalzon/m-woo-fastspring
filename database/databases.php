@@ -16,11 +16,15 @@ function mwfi_create_database_table()
         fs_taxcode varchar(25) NOT NULL,
         fs_product_type tinyint(4) NOT NULL,
         wc_product_id bigint(20) unsigned NOT NULL,
+        fs_product_subscription tinyint(1) unsigned NOT NULL DEFAULT 0,
+        fs_product_subscription_interval varchar(25) default NULL,
+        fs_product_subscription_interval_length tinyint(4) default NULL,
         PRIMARY KEY (id),
         KEY (fs_product_path),
         KEY (wc_product_id),
         KEY (fs_taxcode),
         KEY (fs_product_type),
+        KEY (fs_product_subscription),
         FOREIGN KEY (wc_product_id) REFERENCES {$wpdb -> prefix}posts(ID) ON DELETE CASCADE
     ) $charset_collate;";
 
