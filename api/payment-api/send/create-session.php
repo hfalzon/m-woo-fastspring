@@ -1,4 +1,4 @@
-<?php 
+<?php defined('ABSPATH') or die();
 
 function mwfi_create_session( $discount = null )
 {

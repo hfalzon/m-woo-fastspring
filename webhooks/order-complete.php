@@ -124,6 +124,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             array(
                 'user_id' => $wp_user -> ID,
                 'fs_subscription_id' => $fs_subscription_id,
+                'fs_order_id' => $order_id,
                 'subscription_next_payment' => $next_period_date,
                 'subscription_status' => ($active != true)? false : true,
                 'fs_product_path' => $fs_subscription_product,
@@ -132,6 +133,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             ),
             array(
                 '%d',
+                '%s',
                 '%s',
                 '%s',
                 '%d',

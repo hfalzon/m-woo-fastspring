@@ -57,6 +57,7 @@ require MWFI_PATH . 'api/admin-api/delete/delete-product.php';
 //Get the store api files
 //Sends
 require MWFI_PATH . 'api/payment-api/send/create-session.php';
+require MWFI_PATH . 'api/payment-api/send/return-sub.php'; //Refund
 
 //Gets
 
