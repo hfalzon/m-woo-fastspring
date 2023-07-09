@@ -58,7 +58,11 @@ require MWFI_PATH . 'api/admin-api/delete/delete-product.php';
 //Sends
 require MWFI_PATH . 'api/payment-api/send/create-session.php';
 require MWFI_PATH . 'api/payment-api/send/return-sub.php'; //Refund
+require MWFI_PATH . 'api/payment-api/send/resume-cancelled-subscription.php'; //Resume Cancelled Subscription
 
 //Gets
+
+//Deletes
+require MWFI_PATH . 'api/payment-api/delete/cancel-subscription.php'; //Cancel Subscription
 
 ?>

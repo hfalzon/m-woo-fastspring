@@ -1,5 +1,10 @@
 <?php defined('ABSPATH') or die();
 
+/**
+ * Create a new session in FastSpring
+ * @param array $discount
+ * $discount = array( 'items' => array( 'product_path', 'discount_type', 'discount' ), 'discount' => array( 'discount_type', 'discount' ) )
+ */
 function mwfi_create_session( $discount = null )
 {
     $loggedIn = false;
@@ -25,6 +30,7 @@ function mwfi_create_session( $discount = null )
     //Get customer data
     //Check if customer has WC data
     $customer = WC()->customer;
+    //Check if cart has negative fees
 
     //Create a session array
     $session_array = array(
@@ -39,7 +45,7 @@ function mwfi_create_session( $discount = null )
             'wp_id_' => get_current_user_id()
         ),
         'items' => $cart_items,
-    );   
+    );
     $headers = mwfi_create_headers();
     //wp_die( var_dump( $headers ) );
     $request = mwfi_curl_request(
