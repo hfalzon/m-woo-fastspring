@@ -37,7 +37,7 @@ function mwfi_create_database_table()
         error_log( $wpdb -> last_error );
     }
 
-    $sql = "CREATE TABLE {$wpdb -> prefix}mwfi_subscriptions
+    $sql = "CREATE TABLE {$wpdb -> prefix}mwfi_subscriptions (
     subscription_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
     fs_subscription_id varchar(50),
     fs_product_path varchar(255) NOT NULL,
