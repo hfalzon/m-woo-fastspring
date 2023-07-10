@@ -39,19 +39,21 @@ function mwfi_create_database_table()
 
     $sql = "CREATE TABLE {$wpdb -> prefix}mwfi_subscriptions
     subscription_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-    fs_product_id bigint(20) unsigned NOT NULL,
-    fs_subscription_id varchar(50) NOT NULL,
+    fs_subscription_id varchar(50),
+    fs_product_path varchar(255) NOT NULL,
+    fs_order_id varchar(50) NOT NULL,
     user_id bigint(20) unsigned NOT NULL,
     subscription_status tinyint(4) NOT NULL,
     subscription_start datetime NOT NULL,
-    subscription_end datetime NOT NULL,
-    subscription_next_payment datetime NOT NULL,
+    subscription_end datetime default NULL,
+    subscription_next_payment datetime default NULL,
     PRIMARY KEY (subscription_id),
-    KEY (fs_product_id),
     KEY (user_id),
     KEY (subscription_status),
-    FOREIGN KEY (fs_product_id) REFERENCES {$wpdb -> prefix}mwfi_products(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES {$wpdb -> prefix}users(ID) ON DELETE CASCADE
+    KEY (fs_subscription_id),
+    KEY (fs_order_id),
+    FOREIGN KEY (user_id) REFERENCES {$wpdb -> prefix}users(ID) ON DELETE CASCADE,
+    FOREIGN KEY (fs_product_path) REFERENCES {$wpdb -> prefix}mwfi_products(fs_product_path) ON DELETE RESTRICT
     ) $charset_collate;";
 
     dbDelta( $sql );
