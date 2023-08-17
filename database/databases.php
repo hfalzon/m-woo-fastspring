@@ -65,7 +65,4 @@ function mwfi_create_database_table()
     }
 }
 
-//Add the database on plugin activation
-
-
 ?>

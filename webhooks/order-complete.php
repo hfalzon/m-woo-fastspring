@@ -116,7 +116,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
         if ( isset($subscription_exists) )
         {
             //For now we will just return a success response
-            return new WP_REST_Response(array('success' => false, 'sub_id' => $fs_subscription_id, 'error' => 'Subscription already exists'), 400); //Bad request
+            return new WP_REST_Response(array('success' => false, 'sub_id' => $fs_subscription_id, 'error' => 'Subscription already exists'), 200); //Bad request
         }
         //wp_die($fs_subscription_product);
         $wpdb -> insert(
@@ -143,7 +143,13 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             )
         );
     }
+
+    //do action - 
+    do_action('mwfi_first_order_complete', $fs_is_subscription, $wp_user -> ID );
     
+    //Return success
+    return new WP_REST_Response(array('success' => true), 200);
+
     wp_die('test');//Debug - Stop wooCommerce from creating an order
 
     //Create a new order in WooCommerce
