@@ -22,13 +22,22 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     $products = $payload['events'][0]['data']['items'];
     //Check in the products array if there is a subscription
     $fs_is_subscription = false;
+    $fs_is_lifetime_subscription = false;
     foreach ( $products as $product )
     {
-        if ( $product['isSubscription'] == true )
+        if ( isset($product['isSubscription']) && $product['isSubscription'] == true )
         {
             $fs_is_subscription = true;
             $fs_subscription_product = $product['product'];
             $fs_subscription_id = $product['subscription'];
+            break;
+        }
+        //Check for lifetime access product
+        if ( isset($product['product']) && $product['product'] == 'lifetime-memebership' ) //Hardcoded for now
+        {
+            $fs_is_lifetime_subscription = true;
+            $fs_subscription_product = $product['product'];
+            $fs_lifetime_order_id = $payload['events'][0]['data']['order']; //Should not be able to put lifetime Subs into cart with other items. -> Important for refund purposes.
             break;
         }
     }
@@ -143,14 +152,51 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             )
         );
     }
+    elseif ( $fs_is_lifetime_subscription === true )
+    {
+        //Store the data in the database
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'mwfi_subscriptions';
 
+        //Check if the subscription already exists
+        $subscription_exists = $wpdb -> get_row( $wpdb -> prepare("SELECT * FROM $table_name WHERE fs_order_id = %s AND user_id = %d", $fs_lifetime_order_id, $wp_user -> ID) );
+        if ( isset($subscription_exists) )
+        {
+            //For now we will just return a success response
+            return new WP_REST_Response(array('success' => false, 'sub_id' => $fs_subscription_id, 'error' => 'Subscription already exists'), 200); //Bad request
+        }
+        //wp_die($fs_subscription_product);
+        $wpdb -> insert(
+            $table_name,
+            array(
+                'user_id' => $wp_user -> ID,
+                'fs_subscription_id' => $fs_lifetime_order_id,
+                'fs_order_id' => $fs_lifetime_order_id,
+                'subscription_next_payment' => null,
+                'subscription_status' => true,
+                'fs_product_path' => $fs_subscription_product,
+                'subscription_start' => date('Y-m-d H:i:s'),
+                'subscription_end' => null,
+            ),
+            array(
+                '%d',
+                '%s',
+                '%s',
+                '%s',
+                '%d',
+                '%s',
+                '%s',
+                '%s',
+            )
+        );
+    }
+    //TODO - Deal with basic orders
     //do action - 
     do_action('mwfi_first_order_complete', $fs_is_subscription, $wp_user -> ID );
     
     //Return success
     return new WP_REST_Response(array('success' => true), 200);
-
-    wp_die('test');//Debug - Stop wooCommerce from creating an order
+    //Returning success before the order is create in WooCommerce
 
     //Create a new order in WooCommerce
     $order = wc_create_order();
