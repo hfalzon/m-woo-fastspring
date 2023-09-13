@@ -13,6 +13,20 @@ function mwfi_register_order_complete_endpoint() {
 //Handle the webhook request
 function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
 {
+    //Check if the header has a X-FS-Signature
+    if ( !isset($_SERVER['HTTP_X_FS_SIGNATURE']) )
+    {
+        return new WP_REST_Response(array('success' => false, 'error' => 'No signature'), 400); //Bad request
+    }
+    //Validate the signature
+    $signature = $_SERVER['HTTP_X_FS_SIGNATURE'];
+    $hash = hash_hmac('sha256', $request->get_body(), '15sqAsldkqqQ8SLDa'); //TODO - Move to settings
+    if ( $signature != $hash )
+    {
+        return new WP_REST_Response(array('success' => false, 'error' => 'Invalid signature'), 400); //Bad request
+    }
+    //Check if the request is valid
+
     //Get the order reference
     $payload = json_decode($request->get_body(), true);
     $order_id = $payload['events'][0]['data']['order'];
