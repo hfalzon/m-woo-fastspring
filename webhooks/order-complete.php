@@ -14,7 +14,7 @@ function mwfi_register_order_complete_endpoint() {
 function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
 {
     //Check if the header has a X-FS-Signature
-    if ( !isset($_SERVER['X-Fs-Signature']) )
+    if ( !isset($_SERVER['HTTP_X_FS_SIGNATURE']) )
     {
         //Debug - Send headers back
         return new WP_REST_Response(array('success' => false, 'error' => 'No signature', 'headers' => $_SERVER), 400); //Bad request
