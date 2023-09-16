@@ -14,10 +14,6 @@ function mwfi_register_order_complete_endpoint() {
 function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
 {   
     $headers = $request->get_headers();
-    //log errors
-    error_log( print_r($headers, true) );
-    error_log( print_r(!isset($headers['x_fs_signature']), true) );
-    error_log( print_r($headers['x_fs_signature'][0], true) );
     //Check if the header has a X-FS-Signature
     if ( !isset($headers['x_fs_signature']) )
     {
@@ -28,11 +24,6 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     //Validate the signature
     $signature = $headers['x_fs_signature'][0];
     $hash = base64_encode( hash_hmac('sha256', file_get_contents('php://input'), '15sqAsldkqqQ8SLDa', true) ); //TODO - Move to settings
-    $hash2 = base64_encode( hash_hmac('sha256', $request->get_body(), '15sqAsldkqqQ8SLDa', true) ); //TODO - Move to settings
-    //$hash3 = hash_hmac('sha256', json_decode($request->get_body(), true), '15sqAsldkqqQ8SLDa', true); //TODO - Move to settings
-    error_log( print_r($signature, true) );
-    error_log( print_r($hash, true) );
-    error_log( print_r($hash2, true) );
     //error_log( print_r($hash3, true) );
     if ( $signature != $hash )
     {
