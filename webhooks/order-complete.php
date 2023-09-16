@@ -17,14 +17,14 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     //log errors
     error_log( print_r($headers, true) );
     //Check if the header has a X-FS-Signature
-    if ( !isset($headers['X-FS-Signature']) )
+    if ( !isset($headers['x_fs_signature']) )
     {
         //Debug - Send headers back
         return new WP_REST_Response(array('success' => false, 'error' => 'No signature', 'headers' => $headers), 400); //Bad request
         return new WP_REST_Response(array('success' => false, 'error' => 'No signature'), 400); //Bad request
     }
     //Validate the signature
-    $signature = $headers['X-F-Signature'];
+    $signature = $headers['x_fs_signature'];
     $hash = hash_hmac('sha256', file_get_contents('php://input'), '15sqAsldkqqQ8SLDa', true); //TODO - Move to settings
     if ( $signature != $hash )
     {
