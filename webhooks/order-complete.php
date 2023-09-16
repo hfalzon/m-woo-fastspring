@@ -17,6 +17,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     //log errors
     error_log( print_r($headers, true) );
     error_log( !isset($headers['x_fs_signature']) );
+    error_log( !isset($headers['x_fs_signature'][0]) );
     //Check if the header has a X-FS-Signature
     if ( !isset($headers['x_fs_signature']) )
     {
