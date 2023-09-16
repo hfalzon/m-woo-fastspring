@@ -25,7 +25,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
         return new WP_REST_Response(array('success' => false, 'error' => 'No signature'), 400); //Bad request
     }
     //Validate the signature
-    $signature = $headers['x_fs_signature'];
+    $signature = $headers['x_fs_signature'][0];
     $hash = hash_hmac('sha256', file_get_contents('php://input'), '15sqAsldkqqQ8SLDa', true); //TODO - Move to settings
     if ( $signature != $hash )
     {
