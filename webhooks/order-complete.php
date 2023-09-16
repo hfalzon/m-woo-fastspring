@@ -25,7 +25,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     $hash = hash_hmac('sha256', file_get_contents('php://input'), '15sqAsldkqqQ8SLDa', true); //TODO - Move to settings
     if ( $signature != $hash )
     {
-        return new WP_REST_Response(array('success' => false, 'error' => 'Invalid signature'), 401); //Invalid
+        return new WP_REST_Response(array('success' => false, 'error' => 'Invalid signature ' . $signature), 401); //Invalid
     }
     //Check if the request is valid
 
