@@ -51,7 +51,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             break;
         }
         //Check for lifetime access product
-        if ( isset($product['product']) && $product['product'] == 'lifetime-memebership' ) //Hardcoded for now
+        if ( isset($product['product']) && $product['product'] == 'lifetime-membership' ) //Hardcoded for now
         {
             $fs_is_lifetime_subscription = true;
             $fs_subscription_product = $product['product'];
