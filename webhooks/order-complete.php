@@ -41,7 +41,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     //Check in the products array if there is a subscription
     $fs_is_subscription = false;
     $fs_is_lifetime_subscription = false;
-    foreach ( $products as $product )
+    foreach ( $products as $product ) //For each product within the products array (items in json)
     {
         if ( isset($product['isSubscription']) && $product['isSubscription'] == true )
         {
@@ -206,6 +206,10 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     }
     elseif ( $fs_is_lifetime_subscription === true )
     {
+        //log error for debug
+        error_log( print_r( $fs_lifetime_order_id, true ) );
+        error_log( print_r( $fs_subscription_product, true ) );
+        error_log( print_r( $fs_is_lifetime_subscription, true ) );
         //Store the data in the database
         global $wpdb;
         $table_name = $wpdb->prefix . 'mwfi_subscriptions';
@@ -286,7 +290,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     {
         do_action('mwfi_order_complete', $fs_is_subscription, $wp_user -> ID ); //TODO: This does nothing at this time
     }
-    
+    error_log( print_r( $fs_is_lifetime_subscription, true ) );//DEBUG
     //Return success
     return new WP_REST_Response(array('success' => true), 200);
     //Returning success before the order is create in WooCommerce
