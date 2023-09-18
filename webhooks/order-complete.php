@@ -266,7 +266,6 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
                     'user_id' => $wp_user -> ID,
                 ),
                 array(
-                    '%d',
                     '%s',
                     '%s',
                     '%s',
