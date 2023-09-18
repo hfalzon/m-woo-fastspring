@@ -91,6 +91,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
         //Then we need to check if the email exists in WordPress
         $wp_user_check = get_user_by('email', $fs_wp_email);
     }
+    $fs_has_prior_subscription = $wpdb -> get_row( $wpdb -> prepare("SELECT * FROM $wpdb -> prefix . 'mwfi_subscriptions' WHERE user_id = %d", $wp_user -> ID) ); //Does the user have a prior subscription + One subscription per user
 
     //If the order is a subscription order - set database values
     if ( $fs_is_subscription === true )
@@ -146,29 +147,47 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             return new WP_REST_Response(array('success' => false, 'sub_id' => $fs_subscription_id, 'error' => 'Subscription already exists'), 200); //Bad request
         }
         //wp_die($fs_subscription_product);
-        $wpdb -> insert(
-            $table_name,
-            array(
-                'user_id' => $wp_user -> ID,
-                'fs_subscription_id' => $fs_subscription_id,
-                'fs_order_id' => $order_id,
-                'subscription_next_payment' => $next_period_date,
-                'subscription_status' => ($active != true)? false : true,
-                'fs_product_path' => $fs_subscription_product,
-                'subscription_start' => $start_date,
-                'subscription_end' => $end_date,
-            ),
-            array(
-                '%d',
-                '%s',
-                '%s',
-                '%s',
-                '%d',
-                '%s',
-                '%s',
-                '%s',
-            )
-        );
+        if (!$fs_has_prior_subscription)
+        {
+            $wpdb -> insert(
+                $table_name,
+                array(
+                    'user_id' => $wp_user -> ID,
+                    'fs_subscription_id' => $fs_subscription_id,
+                    'fs_order_id' => $order_id,
+                    'subscription_next_payment' => $next_period_date,
+                    'subscription_status' => ($active != true)? false : true,
+                    'fs_product_path' => $fs_subscription_product,
+                    'subscription_start' => $start_date,
+                    'subscription_end' => $end_date,
+                ),
+                array(
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                )
+            );
+        }
+        else
+        {
+            $wpdb -> update(
+                $wpdb -> prefix . 'mwfi_subscriptions',
+                array(
+                    'fs_subscription_id' => $fs_subscription_id,
+                    'fs_order_id' => $order_id,
+                    'subscription_next_payment' => $next_period_date,
+                    'subscription_status' => ($active != true)? false : true,
+                    'fs_product_path' => $fs_subscription_product,
+                    'subscription_start' => $start_date,
+                    'subscription_end' => $end_date,
+                ),
+            );
+        }
     }
     elseif ( $fs_is_lifetime_subscription === true )
     {
@@ -183,34 +202,75 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
             //For now we will just return a success response
             return new WP_REST_Response(array('success' => false, 'sub_id' => $fs_subscription_id, 'error' => 'Subscription already exists'), 200); //Bad request
         }
-        //wp_die($fs_subscription_product);
-        $wpdb -> insert(
-            $table_name,
-            array(
-                'user_id' => $wp_user -> ID,
-                'fs_subscription_id' => $fs_lifetime_order_id,
-                'fs_order_id' => $fs_lifetime_order_id,
-                'subscription_next_payment' => null,
-                'subscription_status' => true,
-                'fs_product_path' => $fs_subscription_product,
-                'subscription_start' => date('Y-m-d H:i:s'),
-                'subscription_end' => null,
-            ),
-            array(
-                '%d',
-                '%s',
-                '%s',
-                '%s',
-                '%d',
-                '%s',
-                '%s',
-                '%s',
-            )
-        );
+        if ( !$fs_has_prior_subscription ) 
+        {
+            $wpdb -> insert(
+                $table_name,
+                array(
+                    'user_id' => $wp_user -> ID,
+                    'fs_subscription_id' => $fs_lifetime_order_id,
+                    'fs_order_id' => $fs_lifetime_order_id,
+                    'subscription_next_payment' => null,
+                    'subscription_status' => true,
+                    'fs_product_path' => $fs_subscription_product,
+                    'subscription_start' => date('Y-m-d H:i:s'),
+                    'subscription_end' => null,
+                ),
+                array(
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                )
+            );
+        }
+        else
+        {
+            //Update the subscription field with the new data
+            $wpdb -> update
+            (
+                $wpdb -> prefix . 'mwfi_subscriptions',
+                array(
+                    'fs_subscription_id' => $fs_lifetime_order_id,
+                    'fs_order_id' => $fs_lifetime_order_id,
+                    'subscription_next_payment' => null,
+                    'subscription_status' => true,
+                    'fs_product_path' => $fs_subscription_product,
+                    'subscription_start' => date('Y-m-d H:i:s'),
+                    'subscription_end' => null,
+                ),
+                array(
+                    'user_id' => $wp_user -> ID,
+                ),
+                array(
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                ),
+                array(
+                    '%d',
+                )
+            );
+        }
     }
     //TODO - Deal with basic orders
-    //do action - 
-    do_action('mwfi_first_order_complete', $fs_is_subscription, $wp_user -> ID );
+    if (!$fs_has_prior_subscription)
+    {
+        do_action('mwfi_first_order_complete', $fs_is_subscription, $wp_user -> ID ); //TODO: Rename to first subscription at some point
+    }
+    else
+    {
+        do_action('mwfi_order_complete', $fs_is_subscription, $wp_user -> ID ); //TODO: This does nothing at this time
+    }
     
     //Return success
     return new WP_REST_Response(array('success' => true), 200);
