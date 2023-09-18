@@ -186,6 +186,21 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
                     'subscription_start' => $start_date,
                     'subscription_end' => $end_date,
                 ),
+                array(
+                    'user_id' => $wp_user -> ID,
+                ),
+                array(
+                    '%s',
+                    '%s',
+                    '%s',
+                    '%d',
+                    '%s',
+                    '%s',
+                    '%s',
+                ),
+                array(
+                    '%d',
+                )
             );
         }
     }
