@@ -92,7 +92,7 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
         $wp_user_check = get_user_by('email', $fs_wp_email);
     }
     global $wpdb; //Get the database object
-    $fs_has_prior_subscription = $wpdb -> get_row( $wpdb -> prepare("SELECT * FROM $wpdb -> prefix . 'mwfi_subscriptions' WHERE user_id = %d", $wp_user -> ID) ); //Does the user have a prior subscription + One subscription per user
+    $fs_has_prior_subscription = $wpdb -> get_row( $wpdb -> prepare("SELECT * FROM {$wpdb -> prefix}mwfi_subscriptions WHERE user_id = %d", $wp_user -> ID) ); //Does the user have a prior subscription + One subscription per user
 
     //If the order is a subscription order - set database values
     if ( $fs_is_subscription === true )
