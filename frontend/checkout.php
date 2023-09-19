@@ -19,10 +19,10 @@ function mwfi_fs_checkout()
             src="https://sbl.onfastspring.com/sbl/0.9.5/fastspring-builder.min.js"
             type="text/javascript"
             data-storefront="blendertutorials.test.onfastspring.com/popup-blendertutorials">
-            data-popup-webhook-received="dataPopupWebhookReceived"
+            //data-popup-webhook-received="dataPopupWebhookReceived"
             data-popup-closed="dataPopupClosed"
             data-error-callback="dataErrorCallback"
-            //data-debug = "true"
+            data-debug = "true"
             data-continuous="true">
         </script>
     <?php
