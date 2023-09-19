@@ -34,6 +34,7 @@ function mwfi_refund_subscription( string $path )
                 array(
                     'order' => $subscription -> fs_order_id,
                     'reason' => '15 day money back guarantee',
+                    'note' => '15 day money back guarantee',
                     'notification' => 'ORGINAL'
                 )
             )
@@ -41,7 +42,52 @@ function mwfi_refund_subscription( string $path )
         $headers
     );
     //Check if return request was successful
-    if ( $return_request['httpCode'] != 200 ) return false;
+    if ( $return_request['httpCode'] != 200 )
+    {
+        //Get Order By ID - Check for returns - if there is a return already - then update the database and return true
+        $order_by_id = mwfi_curl_request(
+            'https://api.fastspring.com/orders/' . $subscription -> fs_order_id,
+            'GET',
+            array(),
+            $headers
+        );
+        //Check if order by id request was successful
+        if ( $order_by_id['httpCode'] != 200 ) return false;
+        $order_by_id = json_decode( $order_by_id['response'] );
+        //Check if there is a return
+        if ( !empty( $order_by_id -> returns -> return ) )
+        {
+            //Update subscription status
+            $update = $wpdb -> update(
+                $wpdb -> prefix . 'mwfi_subscriptions',
+                array(
+                    'subscription_status' => false,
+                    'subscription_next_payment' => null,
+                    'subscription_end' => current_time('mysql')
+                ),
+                array('user_id' => $user_id),
+                array(
+                    '%d',
+                    '%s',
+                    '%s'
+                ),
+                array('%d')
+            );
+
+            if ( $update === false ) return false;
+
+            return true;
+        }
+        else
+        {
+            //Send email to admin to notify them of the error
+            $admin_email = get_option('admin_email');
+            $subject = 'Subscription Error';
+            $message = 'Subscription Error: Subscription is active but no return was created for user_id' . absint( $user_id ) . '';
+            wp_mail($admin_email, $subject, $message);
+            return false;
+        }
+    }
     if ( $subscription -> fs_product_path !== 'lifetime-membership')
     {
         $cancel_request = mwfi_curl_request(
