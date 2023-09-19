@@ -32,7 +32,7 @@ function mwfi_refund_subscription( string $path )
         array(
             'returns' => array(
                 array(
-                    'order' => $subscription -> fs_order_id, //Need to get order id currenty only have sub_id
+                    'order' => $subscription -> fs_order_id,
                     'reason' => '15 day money back guarantee',
                     'notification' => 'ORGINAL'
                 )
@@ -42,16 +42,18 @@ function mwfi_refund_subscription( string $path )
     );
     //Check if return request was successful
     if ( $return_request['httpCode'] != 200 ) return false;
+    if ( $subscription -> fs_product_path !== 'lifetime-membership')
+    {
+        $cancel_request = mwfi_curl_request(
+            'https://api.fastspring.com/subscriptions/' . $subscription -> fs_subscription_id,
+            'DELETE',
+            array(),
+            $headers
+        );
 
-    $cancel_request = mwfi_curl_request(
-        'https://api.fastspring.com/subscriptions/' . $subscription -> fs_subscription_id,
-        'DELETE',
-        array(),
-        $headers
-    );
-
-    //Check if cancel request was successful
-    if ( $cancel_request['httpCode'] != 200 ) return false;
+        //Check if cancel request was successful
+        if ( $cancel_request['httpCode'] != 200 ) return false;
+    }
 
     //Update subscription status
     $update = $wpdb -> update(
