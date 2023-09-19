@@ -41,6 +41,7 @@ function mwfi_refund_subscription( string $path )
         ),
         $headers
     );
+    error_log(print_r($return_request, true)); //DEBUG
     //Check if return request was successful
     if ( $return_request['httpCode'] != 200 )
     {
@@ -51,6 +52,7 @@ function mwfi_refund_subscription( string $path )
             array(),
             $headers
         );
+        error_log(print_r($order_by_id, true)); //DEBUG
         //Check if order by id request was successful
         if ( $order_by_id['httpCode'] != 200 ) return false;
         $order_by_id = json_decode( $order_by_id['response'] );
