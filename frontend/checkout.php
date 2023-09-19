@@ -22,7 +22,6 @@ function mwfi_fs_checkout()
             data-popup-webhook-received="dataPopupWebhookReceived"
             data-popup-closed="dataPopupClosed"
             data-error-callback="dataErrorCallback"
-            data-debug = "true"
             data-continuous="true">
         </script>
     <?php
