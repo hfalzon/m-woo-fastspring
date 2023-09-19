@@ -57,7 +57,7 @@ function mwfi_refund_subscription( string $path )
         if ( $order_by_id['httpCode'] != 200 ) return false;
         $order_by_id = json_decode( $order_by_id['response'] );
         //Check if there is a return
-        if ( !empty( $order_by_id -> returns -> return ) )
+        if ( !empty( $order_by_id -> returns[0] -> return ) )
         {
             //Update subscription status
             $update = $wpdb -> update(
