@@ -165,7 +165,7 @@ function mwfi_checkout($coupon = null)
     if ( ! class_exists( 'WooCommerce' ) ) {
         return false;
     }
-    $session = mwfi_create_session($coupon = null);
+    $session = mwfi_create_session($coupon);
     //Check if session is valid
     if ( isset( $session['error'] ) ) {
         return $session['error'];
