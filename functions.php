@@ -159,13 +159,13 @@ function mwfi_create_headers()
     return array( 'authorization: Basic ' . $auth );
 }
 
-function mwfi_checkout()
+function mwfi_checkout($coupon = null)
 {
     //Check if woo is active
     if ( ! class_exists( 'WooCommerce' ) ) {
         return false;
     }
-    $session = mwfi_create_session();
+    $session = mwfi_create_session($coupon = null);
     //Check if session is valid
     if ( isset( $session['error'] ) ) {
         return $session['error'];
