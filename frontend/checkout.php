@@ -20,7 +20,7 @@ function mwfi_fs_checkout()
             id="fsc-api"
             src="https://sbl.onfastspring.com/sbl/0.9.5/fastspring-builder.min.js"
             type="text/javascript"
-            data-storefront="blendertutorials.test.onfastspring.com/popup-blendertutorials"
+            data-storefront="blendertutorials.onfastspring.com/popup-blendertutorials"
             data-popup-webhook-received="dataPopupWebhookReceived"
             data-popup-closed="dataPopupClosed"
             data-error-callback="dataErrorCallback"

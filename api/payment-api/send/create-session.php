@@ -48,6 +48,7 @@ function mwfi_create_session( $coupon = null )
     );
     if ( $coupon != null )
     {
+        //TODO: Add precheck for coupon for validity
         $session_array['coupon'] = $coupon;
     }
     $headers = mwfi_create_headers();
