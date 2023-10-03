@@ -11,6 +11,7 @@ function mwfi_handle_checkout( $purchase_data )
 add_action('woocommerce_checkout_process', 'mwfi_handle_checkout');
 
 add_action('wp_head', 'mwfi_fs_checkout');
+//TODO: make a setting that allows the user to choose the data-storefront
 function mwfi_fs_checkout()
 {
     ?>
@@ -18,7 +19,7 @@ function mwfi_fs_checkout()
             id="fsc-api"
             src="https://sbl.onfastspring.com/sbl/0.9.5/fastspring-builder.min.js"
             type="text/javascript"
-            data-storefront="blendertutorials.test.onfastspring.com/popup-blendertutorials"
+            data-storefront="blendertutorials.onfastspring.com/popup-blendertutorials"
             data-popup-webhook-received="dataPopupWebhookReceived"
             data-popup-closed="dataPopupClosed"
             data-error-callback="dataErrorCallback"
