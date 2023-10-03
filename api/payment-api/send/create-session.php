@@ -5,7 +5,7 @@
  * @param array $discount
  * $discount = array( 'items' => array( 'product_path', 'discount_type', 'discount' ), 'discount' => array( 'discount_type', 'discount' ) )
  */
-function mwfi_create_session( $discount = null )
+function mwfi_create_session( $coupon = null )
 {
     $loggedIn = false;
     //Check if customer is logged in
@@ -46,6 +46,10 @@ function mwfi_create_session( $discount = null )
         ),
         'items' => $cart_items,
     );
+    if ( $coupon != null )
+    {
+        $session_array['coupon'] = $coupon;
+    }
     $headers = mwfi_create_headers();
     //wp_die( var_dump( $headers ) );
     $request = mwfi_curl_request(
