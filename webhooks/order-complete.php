@@ -283,7 +283,9 @@ function mwfi_order_complete_handle_endpoint( WP_REST_Request $request )
     //TODO - Deal with basic orders
     if (!$fs_has_prior_subscription)
     {
-        do_action('mwfi_first_order_complete', $fs_is_subscription, $wp_user -> ID ); //TODO: Rename to first subscription at some point
+        $is_sub = false;
+        if ( $fs_is_subscription === true || $fs_is_lifetime_subscription === true ) $is_sub = true;
+        do_action('mwfi_first_order_complete', $is_sub, $wp_user -> ID ); //TODO: Rename to first subscription at some point
     }
     else
     {
